@@ -1,47 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { TaskFilterDTO } from './dto/filter-task.dto';
-import { Task } from './dto/task.entity';
 import { UpdateTaskDTO } from './dto/update-status.dto';
-import { TaskStatus } from './task-status.enum';
+import { Task } from './task.entity';
+import { TasksRepository } from './tasks.repository';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
-    private taskRepository: Repository<Task>,
+    private taskRepository: TasksRepository,
   ) {}
 
   async getTasks(taskFilterDTO: TaskFilterDTO): Promise<Task[]> {
-    const query = this.taskRepository.createQueryBuilder('task');
-    const { status, search } = taskFilterDTO;
-
-    if (status) {
-      query.andWhere('task.status = :status', { status });
-    }
-
-    if (search) {
-      query.andWhere(
-        `LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)`,
-        { search: `%${search}%` },
-      );
-    }
-
-    const tasks = query.getMany();
-    return tasks;
+    return this.taskRepository.getTasks(taskFilterDTO);
   }
 
   async createTask(createTaskDTO: CreateTaskDTO): Promise<Task> {
-    const { title, description } = createTaskDTO;
-    const task = this.taskRepository.create({
-      title,
-      description,
-      status: TaskStatus.OPEN,
-    });
-    await this.taskRepository.save(task);
-    return task;
+    return this.taskRepository.createTask(createTaskDTO);
   }
 
   async getTaskById(id: string): Promise<Task> {
@@ -63,17 +40,4 @@ export class TasksService {
     await this.taskRepository.save(targetTask);
     return targetTask;
   }
-
-  // getFilterTask(taskFilterDTO: TaskFilterDTO) {
-  //   const { search, status } = taskFilterDTO;
-  //   let tasks = this.getAllTasks();
-  //   if (status) tasks = this.tasks.filter((task) => task.status === status);
-  //   if (search)
-  //     tasks = this.tasks.filter((task) => {
-  //       if (task.title.includes(search) || task.description.includes(search))
-  //         return true;
-  //       else return false;
-  //     });
-  //   return tasks;
-  // }
 }
