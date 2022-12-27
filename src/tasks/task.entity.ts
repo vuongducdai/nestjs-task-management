@@ -1,9 +1,11 @@
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { User } from 'src/auth/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TaskStatus } from './task-status.enum';
 
 @Entity()
+@ObjectType()
 export class Task {
   @PrimaryGeneratedColumn() //automatically generate id for our task
   id: string;

@@ -1,0 +1,28 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Task {
+  id: String!
+  title: String!
+  description: String!
+  status: TaskStatus!
+  user: User!
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
+type User {
+  id: String!
+  username: String!
+  password: String!
+  tasks: [Task!]!
+}
+
+type Query {
+  task: [Task!]!
+}
